@@ -12,7 +12,6 @@ type contextKey string
 
 const RequestIDKey contextKey = "requestID"
 
-// RequestIDMiddleware добавляет или генерирует X-Request-ID и кладет в контекст
 func RequestIDMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		requestID := r.Header.Get("X-Request-ID")
@@ -20,17 +19,14 @@ func RequestIDMiddleware(next http.Handler) http.Handler {
 			requestID = strings.ReplaceAll(uuid.New().String(), "-", "")[:16] // генерим короткий ID
 		}
 
-		// Кладем в контекст
 		ctx := context.WithValue(r.Context(), RequestIDKey, requestID)
 
-		// Добавляем в ответ
 		w.Header().Set("X-Request-ID", requestID)
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
 
-// GetRequestID из контекста
 func GetRequestID(ctx context.Context) string {
 	if val := ctx.Value(RequestIDKey); val != nil {
 		if s, ok := val.(string); ok {

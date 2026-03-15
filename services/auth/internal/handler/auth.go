@@ -30,7 +30,6 @@ func NewAuthHandler() *AuthHandler {
 	return &AuthHandler{}
 }
 
-// Login упрощенный вход
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var req LoginRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -38,7 +37,6 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// В учебных целях всегда возвращаем один и тот же токен
 	resp := LoginResponse{
 		AccessToken: validToken,
 		TokenType:   "Bearer",
@@ -48,14 +46,12 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(resp)
 }
 
-// Verify проверка токена
 func (h *AuthHandler) Verify(w http.ResponseWriter, r *http.Request) {
 	authHeader := r.Header.Get("Authorization")
 
 	resp := VerifyResponse{}
 	status := http.StatusOK
 
-	// Проверяем формат Bearer token
 	if authHeader == "" || !strings.HasPrefix(authHeader, "Bearer ") {
 		resp.Valid = false
 		resp.Error = "unauthorized"

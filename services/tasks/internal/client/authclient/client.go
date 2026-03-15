@@ -28,11 +28,9 @@ func NewAuthClient(baseURL string) *AuthClient {
 	}
 }
 
-// VerifyToken проверяет токен через Auth service
 func (c *AuthClient) VerifyToken(ctx context.Context, token string) (*VerifyResponse, int, error) {
 	var resp VerifyResponse
 
-	// Создаем запрос вручную, чтобы установить заголовок Authorization
 	url := c.baseURL + "/v1/auth/verify"
 
 	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
@@ -42,19 +40,16 @@ func (c *AuthClient) VerifyToken(ctx context.Context, token string) (*VerifyResp
 
 	req.Header.Set("Authorization", "Bearer "+token)
 
-	// Прокидываем request-id из контекста
 	if requestID, ok := ctx.Value("requestID").(string); ok && requestID != "" {
 		req.Header.Set("X-Request-ID", requestID)
 	}
 
-	// Выполняем запрос - используем httpClient напрямую
 	httpResp, err := c.client.Do(req) // Метод Do существует в httpx.Client
 	if err != nil {
 		return nil, 0, fmt.Errorf("do request: %w", err)
 	}
 	defer httpResp.Body.Close()
 
-	// Декодируем ответ
 	if err := json.NewDecoder(httpResp.Body).Decode(&resp); err != nil {
 		return nil, httpResp.StatusCode, fmt.Errorf("decode response: %w", err)
 	}
@@ -62,7 +57,6 @@ func (c *AuthClient) VerifyToken(ctx context.Context, token string) (*VerifyResp
 	return &resp, httpResp.StatusCode, nil
 }
 
-// VerifyTokenWithHeader - алиас для VerifyToken (для совместимости)
 func (c *AuthClient) VerifyTokenWithHeader(ctx context.Context, token string) (*VerifyResponse, int, error) {
 	return c.VerifyToken(ctx, token)
 }

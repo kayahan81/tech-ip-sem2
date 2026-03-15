@@ -18,12 +18,10 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	// Хендлеры
 	authHandler := handler.NewAuthHandler()
 	mux.HandleFunc("POST /v1/auth/login", authHandler.Login)
 	mux.HandleFunc("GET /v1/auth/verify", authHandler.Verify)
 
-	// Глобальные middleware
 	handler := sharedMiddleware.RequestIDMiddleware(mux)
 
 	fmt.Printf("Auth service running on port %s\n", port)

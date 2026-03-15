@@ -2,7 +2,7 @@ package httpx
 
 import (
 	"bytes"
-	"context" // <-- Добавляем этот импорт
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -10,13 +10,11 @@ import (
 	"time"
 )
 
-// Client обертка над HTTP клиентом с таймаутами
 type Client struct {
 	BaseURL    string
 	httpClient *http.Client
 }
 
-// NewClient создает клиент с таймаутом
 func NewClient(baseURL string, timeout time.Duration) *Client {
 	return &Client{
 		BaseURL: baseURL,
@@ -26,12 +24,10 @@ func NewClient(baseURL string, timeout time.Duration) *Client {
 	}
 }
 
-// Do выполняет HTTP запрос (без автоматического декодирования)
 func (c *Client) Do(req *http.Request) (*http.Response, error) {
 	return c.httpClient.Do(req)
 }
 
-// DoRequest выполняет HTTP запрос с декодированием ответа в response
 func (c *Client) DoRequest(ctx context.Context, method, path string, body, response interface{}) (*http.Response, error) {
 	url := c.BaseURL + path
 
@@ -49,7 +45,6 @@ func (c *Client) DoRequest(ctx context.Context, method, path string, body, respo
 		return nil, fmt.Errorf("create request: %w", err)
 	}
 
-	// Прокидываем request-id из контекста в заголовок
 	if requestID, ok := ctx.Value("requestID").(string); ok && requestID != "" {
 		req.Header.Set("X-Request-ID", requestID)
 	}

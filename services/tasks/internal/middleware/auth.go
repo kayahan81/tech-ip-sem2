@@ -18,7 +18,6 @@ func NewAuthMiddleware(authClient *authclient.AuthClient) *AuthMiddleware {
 	}
 }
 
-// RequireAuth проверяет токен через Auth service
 func (m *AuthMiddleware) RequireAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		authHeader := r.Header.Get("Authorization")
@@ -30,13 +29,10 @@ func (m *AuthMiddleware) RequireAuth(next http.Handler) http.Handler {
 
 		token := strings.TrimPrefix(authHeader, "Bearer ")
 
-		// Создаем контекст с таймаутом для проверки
 		ctx := r.Context()
 
-		// Вызываем Auth service
 		resp, statusCode, err := m.authClient.VerifyTokenWithHeader(ctx, token)
 		if err != nil {
-			// Auth недоступен или таймаут
 			http.Error(w, `{"error":"auth service unavailable"}`, http.StatusServiceUnavailable)
 			return
 		}
@@ -46,7 +42,6 @@ func (m *AuthMiddleware) RequireAuth(next http.Handler) http.Handler {
 			return
 		}
 
-		// Кладем subject в контекст для использования в хендлерах
 		ctx = context.WithValue(ctx, "subject", resp.Subject)
 
 		next.ServeHTTP(w, r.WithContext(ctx))

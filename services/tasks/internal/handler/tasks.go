@@ -19,7 +19,6 @@ func NewTasksHandler(storage *storage.MemoryStorage) *TasksHandler {
 	}
 }
 
-// CreateTask создает новую задачу
 func (h *TasksHandler) CreateTask(w http.ResponseWriter, r *http.Request) {
 	var task models.Task
 	if err := json.NewDecoder(r.Body).Decode(&task); err != nil {
@@ -27,7 +26,6 @@ func (h *TasksHandler) CreateTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Валидация
 	if task.Title == "" {
 		http.Error(w, `{"error":"title is required"}`, http.StatusBadRequest)
 		return
@@ -40,7 +38,6 @@ func (h *TasksHandler) CreateTask(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(created)
 }
 
-// GetTasks возвращает все задачи
 func (h *TasksHandler) GetTasks(w http.ResponseWriter, r *http.Request) {
 	tasks := h.storage.GetAll()
 
@@ -48,7 +45,6 @@ func (h *TasksHandler) GetTasks(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(tasks)
 }
 
-// GetTask возвращает задачу по ID
 func (h *TasksHandler) GetTask(w http.ResponseWriter, r *http.Request) {
 	id := strings.TrimPrefix(r.URL.Path, "/v1/tasks/")
 	if id == "" {
@@ -66,7 +62,6 @@ func (h *TasksHandler) GetTask(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(task)
 }
 
-// UpdateTask обновляет задачу
 func (h *TasksHandler) UpdateTask(w http.ResponseWriter, r *http.Request) {
 	id := strings.TrimPrefix(r.URL.Path, "/v1/tasks/")
 	if id == "" {
@@ -90,7 +85,6 @@ func (h *TasksHandler) UpdateTask(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(updated)
 }
 
-// DeleteTask удаляет задачу
 func (h *TasksHandler) DeleteTask(w http.ResponseWriter, r *http.Request) {
 	id := strings.TrimPrefix(r.URL.Path, "/v1/tasks/")
 	if id == "" {
