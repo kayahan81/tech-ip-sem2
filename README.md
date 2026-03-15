@@ -73,6 +73,7 @@ go run ./services/tasks/cmd/tasks
 <img width="1632" height="86" alt="image" src="https://github.com/user-attachments/assets/a8449064-1176-4c0b-8f34-91c131d215eb" />
 
 ### GET /v1/auth/verify
+![alt text](Снимок.PNG)
 
 ## Tasks service
 ### POST /v1/tasks
